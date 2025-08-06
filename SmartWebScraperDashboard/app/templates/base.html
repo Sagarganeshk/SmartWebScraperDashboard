@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Web Scraper Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Smart Web Scraper Dashboard</h1>
+        <label class="dark-toggle">
+            Dark Mode
+            <input type="checkbox" id="darkModeToggle">
+        </label>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

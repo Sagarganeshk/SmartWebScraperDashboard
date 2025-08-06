@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- 📊 Dashboard Summary -->
+<div class="dashboard-metrics">
+  <h2>📊 Dashboard Summary</h2>
+  <div class="metrics-grid">
+    <div class="metric-box">Jobs: {{ metrics.jobs_count }}</div>
+    <div class="metric-box">News: {{ metrics.news_count }}</div>
+    <div class="metric-box">Products: {{ metrics.products_count }}</div>
+  </div>
+</div>
+
+<!-- LOOP THROUGH SECTIONS -->
+{% for section, items in [("jobs", jobs), ("news", news), ("products", products)] %}
+  <section>
+    <h2>{{ section.capitalize() }}</h2>
+
+    <!-- 🎯 FILTERS -->
+    {% if section == "jobs" %}
+      <label for="jobFilter">Filter by Company:</label>
+      <select id="jobFilter">
+        <option value="all">All</option>
+        {% for job in jobs|unique(attribute='company') %}
+          <option value="{{ job.company }}">{{ job.company }}</option>
+        {% endfor %}
+      </select>
+    {% elif section == "news" %}
+      <label for="newsFilter">Filter by Source:</label>
+      <select id="newsFilter">
+        <option value="all">All</option>
+        {% for article in news|unique(attribute='source') %}
+          <option value="{{ article.source }}">{{ article.source }}</option>
+        {% endfor %}
+      </select>
+    {% elif section == "products" %}
+      <label for="productFilter">Search Products:</label>
+      <input type="text" id="productFilter" placeholder="Search by name...">
+    {% endif %}
+
+    <!-- 🔍 Search + Sort + Export -->
+    <input type="text" id="{{ section }}Search" placeholder="Search..." onkeyup="searchTable('{{ section }}')">
+    <button onclick="sortTable('{{ section }}', 'title')">Sort by Title</button>
+    <button onclick="sortTable('{{ section }}', 'company')">Sort by Company</button>
+    <button onclick="exportToCSV('{{ section }}')">Export CSV</button>
+
+    <!-- 📋 Table -->
+    <table id="{{ section }}Table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr class="{{ section[:-1] }}-item"
+              {% if section == "jobs" %}
+                data-company="{{ item.company|lower }}"
+              {% elif section == "news" %}
+                data-source="{{ item.source|lower }}"
+              {% elif section == "products" %}
+                data-name="{{ item.name|lower }}"
+              {% endif %}>
+            <td>{{ item.title }}</td>
+            <td>{{ item.company }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination" id="{{ section }}Pagination"></div>
+  </section>
+{% endfor %}
+
+{% endblock %}
